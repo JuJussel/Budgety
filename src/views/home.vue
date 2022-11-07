@@ -20,11 +20,13 @@
                             :key="index"
                         >
                             <div
-                                @click="$store.commit('SET_ACTIVE_VIEW', item)"
+                                @click="
+                                    $store.commit('SET_ACTIVE_VIEW', item.name)
+                                "
                                 class="menu-button"
                                 v-bind:class="{
                                     active:
-                                        $store.getters.activeView === item.code,
+                                        $store.getters.activeView === item.name,
                                 }"
                             >
                                 {{ item.name }}
@@ -37,13 +39,11 @@
                 <Card style="height: 100%">
                     <template #header>
                         <h2 style="padding: 10px; margin-bottom: -30px">
-                            {{ $store.getters.activeView.name }}
+                            {{ $store.getters.activeView }}
                         </h2>
                     </template>
                     <template #content>
-                        <component
-                            :is="$store.getters.activeView.code"
-                        ></component>
+                        <component :is="$store.getters.activeView"></component>
                     </template>
                 </Card>
             </div>
@@ -52,11 +52,13 @@
 </template>
 
 <script>
-import accounts from "../components/layouts/accounts.vue";
+import Accounts from "../components/layouts/accounts.vue";
+import Loans from "../components/layouts/loans.vue";
 
 export default {
     components: {
-        accounts,
+        Accounts,
+        Loans,
     },
     created() {
         if (this.$store.getters.user) {
@@ -68,14 +70,14 @@ export default {
     data() {
         return {
             menuItems: [
-                { name: "Dashboard", code: "dashboard", icon: null },
-                { name: "Accounts", code: "accounts", icon: null },
-                { name: "Loans", code: "loans", icon: null },
-                { name: "Cards", code: "cards", icon: null },
-                { name: "Cashflow", code: "cashflow", icon: null },
-                { name: "Categories", code: "categories", icon: null },
-                { name: "Budgets", code: "budgets", icon: null },
-                { name: "Graphs", code: "graphs", icon: null },
+                { name: "Dashboard", icon: null },
+                { name: "Accounts", icon: null },
+                { name: "Loans", icon: null },
+                { name: "Cards", icon: null },
+                { name: "Cashflow", icon: null },
+                { name: "Categories", icon: null },
+                { name: "Budgets", icon: null },
+                { name: "Graphs", icon: null },
             ],
         };
     },

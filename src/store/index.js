@@ -3,7 +3,7 @@ import { createStore } from "vuex";
 var defaultState = function () {
     return {
         user: true,
-        activeView: 'dashboard',
+        activeView: 'Dashboard',
         viewData: null
     };
 }

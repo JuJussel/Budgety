@@ -1,7 +1,7 @@
 {
     "db": {
         "db": "dev01.2zd7t.mongodb.net/budgetly01",
-        "user": "budgetly_web",
+        "user": "budgety_web",
         "password": null
     }
 }
