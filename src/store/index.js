@@ -2,11 +2,11 @@ import { createStore } from "vuex";
 
 var defaultState = function () {
     return {
-        user: true,
-        activeView: 'Dashboard',
-        viewData: null
+        user: null,
+        activeView: "Dashboard",
+        viewData: null,
     };
-}
+};
 
 export const store = createStore({
     state() {
@@ -16,7 +16,7 @@ export const store = createStore({
     getters: {
         activeView: (state) => state.activeView,
         user: (state) => state.user,
-        viewData: (state) => state.viewData
+        viewData: (state) => state.viewData,
     },
 
     mutations: {
@@ -24,12 +24,14 @@ export const store = createStore({
             Object.assign(state, defaultState());
         },
         SET_ACTIVE_VIEW(state, view) {
-            state.activeView = view
+            state.activeView = view;
         },
         SET_VIEW_DATA(state, data) {
-            state.viewData = data
-        }
-
+            state.viewData = data;
+        },
+        SET_USER(state, data) {
+            state.user = data;
+        },
     },
     actions: {},
 });
