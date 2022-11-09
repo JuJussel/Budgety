@@ -25,6 +25,7 @@
         :header="$t('addAccount')"
         v-model:visible="newAccount.open"
         :modal="true"
+        :closable="!newAccount.loading"
     >
         <div class="field">
             <label for="name"> {{ $t("name") }} </label>
@@ -55,6 +56,13 @@
             />
         </div>
         <p style="display: flex; justify-content: flex-end">
+            <div
+                v-if="newAccount.loading"
+                style="display: flex; justify-items: center; align-items: center; margin-right: 10px"
+            >
+                <ProgressSpinner style="width: 30px; height: 30px" />
+            </div>
+
             <Button
                 @click="createNewAccount"
                 :label="$t('addAccount')"
@@ -80,6 +88,7 @@ export default {
         return {
             newAccount: {
                 open: false,
+                loading: false,
                 data: {
                     name: "",
                     owner: "",
@@ -91,18 +100,20 @@ export default {
     methods: {
         fetchData() {},
         createNewAccount() {
+            newAccount.loading = true;
+            let newAccount = this.newAccount.data;
             let query = {
                 dataSource: "Dev01",
                 database: "budgety",
                 collection: "accounts",
-                filter: {},
+                documents: newAccount,
             };
-            this.$dataService("find", query).then((res) =>
-                this.$store.commit("SET_VIEW_DATA", [
-                    "accounts",
-                    { data: res.documents },
-                ])
-            );
+            this.$dataService("insertOne", query).then((res) => {
+                newAccount.id = res.insertId;
+                this.$store.commit("ADD_ITEM", ["accounts", { newAccount }]);
+                newAccount.loading = true;
+                newAccount.open = false;
+            });
         },
     },
 };

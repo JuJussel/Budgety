@@ -54,6 +54,9 @@ export const store = createStore({
         SET_USER(state, data) {
             state.user = data;
         },
+        ADD_ITEM(state, data) {
+            state.viewData[data[0]].data.push(data);
+        },
     },
     actions: {},
 });
