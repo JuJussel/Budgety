@@ -1,3 +1,5 @@
+import config from "../config/config.json"
+
 export default {
     install: (app) => {
         app.config.globalProperties.$dataService = function (
@@ -11,8 +13,8 @@ export default {
                 instance.$store.getters.user?.password || auth.password;
             return new Promise(function (resolve, reject) {
                 fetch(
-                    "https://budgetly-api.jujussel.workers.dev/?https://data.mongodb-api.com/app/data-hdtka/endpoint/data/v1/action/" +
-                        action,
+                    config.dataUrl +
+                    action,
                     {
                         method: "POST",
                         headers: {

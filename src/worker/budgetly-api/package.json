@@ -1,6 +1,6 @@
 {
-  "name": "budgetly-api",
-  "version": "0.0.0",
+  "name": "budgety-api",
+  "version": "0.0.1",
   "devDependencies": {
     "vitest": "^0.25.0",
     "wrangler": "2.1.15"

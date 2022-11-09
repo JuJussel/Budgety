@@ -3,6 +3,9 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { store } from "./store";
 import App from "./App.vue";
 import DataService from "./services/data.service";
+import { createI18n } from "vue-i18n";
+import messages from "@intlify/unplugin-vue-i18n/messages";
+
 import PrimeVue from "primevue/config";
 import Card from "primevue/card";
 import Button from "primevue/button";
@@ -14,6 +17,7 @@ import Row from "primevue/row";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import Message from "primevue/message";
+import Dialog from 'primevue/dialog';
 
 import Home from "./views/home.vue";
 import Login from "./views/login.vue";
@@ -31,6 +35,16 @@ const router = createRouter({
     ],
 });
 
+const i18n = createI18n({
+    legacy: true,
+    globalInjection: true,
+    locale: "en",
+    fallbackLocale: "en",
+    availableLocales: ["en", "jp"],
+    messages: messages,
+});
+
+app.use(i18n)
 app.use(PrimeVue, { ripple: true });
 app.use(store);
 app.use(router);
@@ -45,6 +59,7 @@ app.component("Row", Row);
 app.component("InputText", InputText);
 app.component("ProgressSpinner", ProgressSpinner);
 app.component("Message", Message);
+app.component("Dialog", Dialog);
 
 app.directive("ripple", Ripple);
 

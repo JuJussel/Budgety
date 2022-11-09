@@ -29,17 +29,17 @@
                                         $store.getters.activeView === item.name,
                                 }"
                             >
-                                {{ item.name }}
+                                {{ $t(item.name) }}
                             </div>
                         </div>
                     </template>
                 </Card>
             </div>
             <div class="content">
-                <Card style="height: 100%">
+                <Card class="viewCard">
                     <template #header>
                         <h2 style="padding: 10px; margin-bottom: -30px">
-                            {{ $store.getters.activeView }}
+                            {{ $t($store.getters.activeView) }}
                         </h2>
                     </template>
                     <template #content>
@@ -66,18 +66,35 @@ export default {
         } else {
             this.$router.push("/login");
         }
+        this.prefetchData();
+    },
+    methods: {
+        prefetchData() {
+            let query = {
+                dataSource: "Dev01",
+                database: "budgety",
+                collection: "accounts",
+                filter: {},
+            };
+            this.$dataService("find", query).then((res) =>
+                this.$store.commit("SET_VIEW_DATA", [
+                    "accounts",
+                    { data: res.documents },
+                ])
+            );
+        },
     },
     data() {
         return {
             menuItems: [
-                { name: "Dashboard", icon: null },
-                { name: "Accounts", icon: null },
-                { name: "Loans", icon: null },
-                { name: "Cards", icon: null },
-                { name: "Cashflow", icon: null },
-                { name: "Categories", icon: null },
-                { name: "Budgets", icon: null },
-                { name: "Graphs", icon: null },
+                { name: "dashboard", icon: null },
+                { name: "accounts", icon: null },
+                { name: "loans", icon: null },
+                { name: "cards", icon: null },
+                { name: "cashflow", icon: null },
+                { name: "categories", icon: null },
+                { name: "budgets", icon: null },
+                { name: "graphs", icon: null },
             ],
         };
     },
@@ -140,5 +157,11 @@ export default {
 .content {
     padding: 10px;
     height: 100%;
+    display: grid;
+}
+.viewCard .p-card-content {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 70px auto;
 }
 </style>

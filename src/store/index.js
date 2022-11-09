@@ -4,7 +4,14 @@ var defaultState = function () {
     return {
         user: null,
         activeView: "Dashboard",
-        viewData: null,
+        viewData: {
+            accounts: { data: null },
+            loans: { data: null },
+            cards: { data: null },
+            cashflow: { data: null },
+            categories: { data: null },
+            budgets: { data: null }
+        },
     };
 };
 
@@ -27,7 +34,7 @@ export const store = createStore({
             state.activeView = view;
         },
         SET_VIEW_DATA(state, data) {
-            state.viewData = data;
+            Object.assign(state.viewData[data[0]], data[1])
         },
         SET_USER(state, data) {
             state.user = data;

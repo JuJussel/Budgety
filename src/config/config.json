@@ -1,7 +1,3 @@
 {
-    "db": {
-        "db": "dev01.2zd7t.mongodb.net/budgetly01",
-        "user": "budgety_web",
-        "password": null
-    }
+    "dataUrl": "https://budgetly-api.jujussel.workers.dev/?https://data.mongodb-api.com/app/data-hdtka/endpoint/data/v1/action/"
 }

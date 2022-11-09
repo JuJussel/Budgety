@@ -1,0 +1,13 @@
+{
+    "dashboard": "Dashboard",
+    "accounts": "Accounts",
+    "loans": "Loans",
+    "cards": "Cards",
+    "cashflow": "Cashflow",
+    "categories": "Categories",
+    "budgets": "Budgets",
+    "graphs": "Graphs",
+    "addAccount": "Add Account",
+    "noRecordsFound": "No records found",
+    "name": "Name"
+}
