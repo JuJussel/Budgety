@@ -17,7 +17,9 @@ import Row from "primevue/row";
 import InputText from "primevue/inputtext";
 import ProgressSpinner from "primevue/progressspinner";
 import Message from "primevue/message";
-import Dialog from 'primevue/dialog';
+import Dialog from "primevue/dialog";
+import InputNumber from "primevue/inputnumber";
+import Dropdown from "primevue/dropdown";
 
 import Home from "./views/home.vue";
 import Login from "./views/login.vue";
@@ -44,7 +46,7 @@ const i18n = createI18n({
     messages: messages,
 });
 
-app.use(i18n)
+app.use(i18n);
 app.use(PrimeVue, { ripple: true });
 app.use(store);
 app.use(router);
@@ -60,6 +62,8 @@ app.component("InputText", InputText);
 app.component("ProgressSpinner", ProgressSpinner);
 app.component("Message", Message);
 app.component("Dialog", Dialog);
+app.component("InputNumber", InputNumber);
+app.component("Dropdown", Dropdown);
 
 app.directive("ripple", Ripple);
 

@@ -1,21 +1,27 @@
 import { createStore } from "vuex";
+import VuexPersistence from "vuex-persist";
+
+const vuexLocal = new VuexPersistence({
+    storage: window.localStorage,
+});
 
 var defaultState = function () {
     return {
         user: null,
-        activeView: "Dashboard",
+        activeView: "dashboard",
         viewData: {
             accounts: { data: null },
             loans: { data: null },
             cards: { data: null },
             cashflow: { data: null },
             categories: { data: null },
-            budgets: { data: null }
+            budgets: { data: null },
         },
     };
 };
 
 export const store = createStore({
+    plugins: [vuexLocal.plugin],
     state() {
         return defaultState();
     },
@@ -24,6 +30,15 @@ export const store = createStore({
         activeView: (state) => state.activeView,
         user: (state) => state.user,
         viewData: (state) => state.viewData,
+        owners: function (state) {
+            let owners = [];
+            state.viewData.accounts.data.forEach((e) => {
+                e.owner && owners.indexOf(e.owner) === -1
+                    ? owners.push(e.owner)
+                    : null;
+            });
+            return owners;
+        },
     },
 
     mutations: {
@@ -34,7 +49,7 @@ export const store = createStore({
             state.activeView = view;
         },
         SET_VIEW_DATA(state, data) {
-            Object.assign(state.viewData[data[0]], data[1])
+            Object.assign(state.viewData[data[0]], data[1]);
         },
         SET_USER(state, data) {
             state.user = data;
