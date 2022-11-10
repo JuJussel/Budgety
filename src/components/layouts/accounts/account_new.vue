@@ -1,33 +1,6 @@
 <template>
-    <div
-        v-if="!$store.getters.viewData.accounts.data"
-        style="display: flex; justify-items: center"
-    >
-        <ProgressSpinner />
-    </div>
-    <div v-else>
-        <p>
-            <Button
-                @click="newAccount.open = true"
-                :label="$t('addAccount')"
-                class="p-button-sm"
-            />
-        </p>
-        <DataTable :value="accounts">
-            <template #empty> {{ $t("noRecordsFound") }} </template>
-            <Column field="name" header="Name"></Column>
-            <Column field="owner" header="Owner"></Column>
-            <Column field="balance" header="Balance"></Column>
-        </DataTable>
-    </div>
-
-    <Dialog
-        :header="$t('addAccount')"
-        v-model:visible="newAccount.open"
-        :modal="true"
-        :closable="!newAccount.loading"
-    >
-        <div class="field">
+    <div>
+                <div class="field">
             <label for="name"> {{ $t("name") }} </label>
             <InputText
                 v-model="newAccount.data.name"
@@ -37,16 +10,15 @@
             />
         </div>
         <div class="field">
-            <label for="name"> {{ $t("name") }} </label>
+            <label for="name"> {{ $t("owner") }} </label>
             <Dropdown
                 v-model="newAccount.data.owner"
-                optionLabel="name"
                 :options="$store.getters.owners"
                 :editable="true"
             />
         </div>
         <div class="field">
-            <label for="balance">Balance</label>
+            <label for="balance"> {{ $t('balance') }} </label>
             <InputNumber
                 v-model="newAccount.data.balance"
                 inputId="balance"
@@ -70,20 +42,16 @@
                 :disabled="
                     newAccount.data.name === '' ||
                     newAccount.data.owner === '' ||
-                    newAccount.data.balance === ''
+                    newAccount.data.balance === null
                 "
             />
         </p>
-    </Dialog>
+    </div>
 </template>
 
 <script>
 export default {
-    computed: {
-        accounts() {
-            return this.$store.getters.viewData?.accounts.data || [];
-        },
-    },
+    emits: ["close"],
     data() {
         return {
             newAccount: {
@@ -92,27 +60,23 @@ export default {
                 data: {
                     name: "",
                     owner: "",
-                    balance: "",
+                    balance: 0,
                 },
             },
         };
     },
     methods: {
-        fetchData() {},
         createNewAccount() {
             this.newAccount.loading = true;
-            let newAccount = this.newAccount.data;
+            var newAccount = this.newAccount.data;
             let query = {
-                dataSource: "Dev01",
-                database: "budgety",
                 collection: "accounts",
                 document: newAccount,
             };
             this.$dataService("insertOne", query).then((res) => {
-                this.newAccount.id = res.insertId;
-                this.$store.commit("ADD_ITEM", ["accounts", [newAccount]]);
-                this.newAccount.loading = true;
-                this.newAccount.open = false;
+                newAccount.id = res.insertedId;
+                this.$store.commit("ADD_ITEM", ["accounts", newAccount]);
+                this.$emit("close");
             });
         },
     },

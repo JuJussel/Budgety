@@ -11,6 +11,12 @@ export default {
             const email = instance.$store.getters.user?.email || auth.email;
             const password =
                 instance.$store.getters.user?.password || auth.password;
+            let bodyFull = {
+                dataSource: config.dataSource,
+                database: config.database,
+
+            }
+            bodyFull = Object.assign(bodyFull, body)
             return new Promise(function (resolve, reject) {
                 fetch(
                     config.dataUrl +
@@ -26,7 +32,7 @@ export default {
                             email: email,
                             password: password,
                         },
-                        body: JSON.stringify(body),
+                        body: JSON.stringify(bodyFull),
                     }
                 )
                     .then((res) => {

@@ -1,3 +1,6 @@
 {
-    "dataUrl": "https://budgetly-api.jujussel.workers.dev/?https://data.mongodb-api.com/app/data-hdtka/endpoint/data/v1/action/"
+    "dataUrl2": "https://budgetly-api.jujussel.workers.dev/?https://data.mongodb-api.com/app/data-hdtka/endpoint/data/v1/action/",
+    "dataUrl": "https://budgetly-api.jujussel.workers.dev/?https://ap-southeast-1.aws.data.mongodb-api.com/app/data-nvhxi/endpoint/data/v1/action/",
+    "dataSource": "ButgetyCluster01",
+    "database": "butgetyDb01"
 }

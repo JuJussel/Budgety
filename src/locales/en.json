@@ -9,5 +9,7 @@
     "graphs": "Graphs",
     "addAccount": "Add Account",
     "noRecordsFound": "No records found",
-    "name": "Name"
+    "name": "Name",
+    "owner": "Owner",
+    "balance": "Balance"
 }

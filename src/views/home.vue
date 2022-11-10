@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import Accounts from "../components/layouts/accounts.vue";
+import Accounts from "../components/layouts/accounts";
 import Loans from "../components/layouts/loans.vue";
 
 export default {
@@ -71,8 +71,6 @@ export default {
     methods: {
         prefetchData() {
             let query = {
-                dataSource: "Dev01",
-                database: "budgety",
                 collection: "accounts",
                 filter: {},
             };

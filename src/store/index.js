@@ -32,7 +32,7 @@ export const store = createStore({
         viewData: (state) => state.viewData,
         owners: function (state) {
             let owners = [];
-            state.viewData.accounts.data.forEach((e) => {
+            state.viewData.accounts.data?.forEach((e) => {
                 e.owner && owners.indexOf(e.owner) === -1
                     ? owners.push(e.owner)
                     : null;
@@ -58,7 +58,7 @@ export const store = createStore({
             state.user = data;
         },
         ADD_ITEM(state, data) {
-            state.viewData[data[0]].data.push(data);
+            state.viewData[data[0]].data.push(data[1]);
         },
     },
     actions: {},
