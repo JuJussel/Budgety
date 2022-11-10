@@ -22,6 +22,7 @@ export default {
                             "Access-Control-Allow-Methods":
                                 "GET,HEAD,POST,OPTIONS",
                             "Access-Control-Max-Age": "86400",
+                            "Content-Type": "application/json",
                             email: email,
                             password: password,
                         },

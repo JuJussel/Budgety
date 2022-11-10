@@ -45,6 +45,9 @@ export const store = createStore({
         CLEAR_STORE(state) {
             Object.assign(state, defaultState());
         },
+        RESET_VIEW_DATA(state) {
+            state.viewData = defaultState().viewData
+        },
         SET_ACTIVE_VIEW(state, view) {
             state.activeView = view;
         },

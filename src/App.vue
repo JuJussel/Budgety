@@ -10,12 +10,13 @@ export default {
         } else {
             this.$router.push("/login");
         }
+        this.$store.commit("RESET_VIEW_DATA");
     },
 };
 </script>
 
 <style>
 body {
-    margin: 0
+    margin: 0;
 }
 </style>

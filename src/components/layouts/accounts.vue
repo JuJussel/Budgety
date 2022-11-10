@@ -100,19 +100,19 @@ export default {
     methods: {
         fetchData() {},
         createNewAccount() {
-            newAccount.loading = true;
+            this.newAccount.loading = true;
             let newAccount = this.newAccount.data;
             let query = {
                 dataSource: "Dev01",
                 database: "budgety",
                 collection: "accounts",
-                documents: newAccount,
+                document: newAccount,
             };
             this.$dataService("insertOne", query).then((res) => {
-                newAccount.id = res.insertId;
-                this.$store.commit("ADD_ITEM", ["accounts", { newAccount }]);
-                newAccount.loading = true;
-                newAccount.open = false;
+                this.newAccount.id = res.insertId;
+                this.$store.commit("ADD_ITEM", ["accounts", [newAccount]]);
+                this.newAccount.loading = true;
+                this.newAccount.open = false;
             });
         },
     },
