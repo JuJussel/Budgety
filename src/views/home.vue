@@ -53,7 +53,7 @@
 
 <script>
 import Accounts from "../components/layouts/accounts";
-import Loans from "../components/layouts/loans.vue";
+import Loans from "../components/layouts/loans";
 
 export default {
     components: {
@@ -70,13 +70,23 @@ export default {
     },
     methods: {
         prefetchData() {
-            let query = {
+            let accounts = {
                 collection: "accounts",
                 filter: {},
             };
-            this.$dataService("find", query).then((res) =>
+            this.$dataService("find", accounts).then((res) =>
                 this.$store.commit("SET_VIEW_DATA", [
                     "accounts",
+                    { data: res.documents },
+                ])
+            );
+            let loans = {
+                collection: "loans",
+                filter: {},
+            };
+            this.$dataService("find", loans).then((res) =>
+                this.$store.commit("SET_VIEW_DATA", [
+                    "loans",
                     { data: res.documents },
                 ])
             );

@@ -15,9 +15,19 @@
         </p>
         <DataTable :value="accounts" selectionMode="single">
             <template #empty> {{ $t("noRecordsFound") }} </template>
-            <Column field="name" header="Name"></Column>
-            <Column field="owner" header="Owner"></Column>
-            <Column field="balance" header="Balance"></Column>
+            <Column field="name" :header="$t('name')"></Column>
+            <Column field="type" :header="$t('type')"></Column>
+            <Column field="owner" :header="$t('owner')"></Column>
+            <Column field="balance" :header="$t('balance')">
+                <template #body="slotProps">
+                    {{
+                        slotProps.data.balance.toLocaleString("ja-JP", {
+                            style: "currency",
+                            currency: "JPY",
+                        })
+                    }}
+                </template></Column
+            >
         </DataTable>
     </div>
 

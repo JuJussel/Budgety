@@ -8,8 +8,12 @@
     "budgets": "Budgets",
     "graphs": "Graphs",
     "addAccount": "Add Account",
+    "addLoan": "Add Loan",
     "noRecordsFound": "No records found",
     "name": "Name",
     "owner": "Owner",
-    "balance": "Balance"
+    "balance": "Balance",
+    "type": "Type",
+    "payments": "Payments",
+    "startDate": "Start Date"
 }

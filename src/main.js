@@ -20,6 +20,8 @@ import Message from "primevue/message";
 import Dialog from "primevue/dialog";
 import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
+import Textarea from 'primevue/textarea';
+import Calendar from 'primevue/calendar';
 
 import Home from "./views/home.vue";
 import Login from "./views/login.vue";
@@ -64,6 +66,8 @@ app.component("Message", Message);
 app.component("Dialog", Dialog);
 app.component("InputNumber", InputNumber);
 app.component("Dropdown", Dropdown);
+app.component("Textarea", Textarea);
+app.component("Calendar", Calendar);
 
 app.directive("ripple", Ripple);
 

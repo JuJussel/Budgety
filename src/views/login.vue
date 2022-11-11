@@ -68,8 +68,6 @@ export default {
             this.loading = true;
             this.error = null;
             let body = {
-                dataSource: "Dev01",
-                database: "budgety",
                 collection: "accounts",
                 limit: 1,
                 filter: {},

@@ -1,6 +1,6 @@
 <template>
     <div>
-                <div class="field">
+        <div class="field">
             <label for="name"> {{ $t("name") }} </label>
             <InputText
                 v-model="newAccount.data.name"
@@ -10,7 +10,16 @@
             />
         </div>
         <div class="field">
-            <label for="name"> {{ $t("owner") }} </label>
+            <label> {{ $t("type") }} </label>
+            <Dropdown
+                v-model="newAccount.data.type"
+                :options="$store.getters.accountTypes"
+                :editable="true"
+            />
+        </div>
+
+        <div class="field">
+            <label> {{ $t("owner") }} </label>
             <Dropdown
                 v-model="newAccount.data.owner"
                 :options="$store.getters.owners"
@@ -61,6 +70,7 @@ export default {
                     name: "",
                     owner: "",
                     balance: 0,
+                    type: "",
                 },
             },
         };

@@ -39,6 +39,16 @@ export const store = createStore({
             });
             return owners;
         },
+        accountTypes: function (state) {
+            let types = [];
+            state.viewData.accounts.data?.forEach((e) => {
+                e.type && types.indexOf(e.type) === -1
+                    ? types.push(e.type)
+                    : null;
+            });
+            return types;
+        },
+
     },
 
     mutations: {
