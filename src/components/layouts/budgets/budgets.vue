@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="!$store.getters.viewData.loans.data"
+        v-if="!$store.getters.viewData.budgets.data"
         style="display: flex; justify-items: center"
     >
         <ProgressSpinner />
@@ -9,16 +9,16 @@
     <div v-else>
         <p>
             <Button
-                @click="newLoanOpen = true"
-                :label="$t('addLoan')"
+                @click="newBudgetOpen = true"
+                :label="$t('addBudget')"
                 class="p-button-sm"
             />
         </p>
-        <DataTable :value="loans">
+        <DataTable :value="budgets">
             <template #empty> {{ $t("noRecordsFound") }} </template>
             <Column field="name" :header="$t('name')"></Column>
             <Column field="owner" :header="$t('owner')"></Column>
-            <Column field="account" :header="$t('payFrom')">
+            <Column field="account" :header="$t('account')">
                 <template #body="slotProps">
                     {{
                         $store.getters.viewData.accounts.data?.find(
@@ -27,49 +27,39 @@
                     }}
                 </template>
             </Column>
-            <Column field="balance" :header="$t('balance')">
+            <Column field="category" :header="$t('category')"></Column>
+            <Column field="budget" :header="$t('budget')">
                 <template #body="slotProps">
                     {{
-                        slotProps.data.balance.toLocaleString("ja-JP", {
+                        slotProps.data.budget.toLocaleString("ja-JP", {
                             style: "currency",
                             currency: "JPY",
                         })
                     }}
                 </template>
             </Column>
-            <Column field="payments" :header="$t('remainingPayments')">
-                <template #body="slotProps">
-                    {{ remainingPayments(slotProps.data.payments) }}
-                </template>
-            </Column>
         </DataTable>
     </div>
-    <Dialog :header="$t('addLoan')" v-model:visible="newLoanOpen" :modal="true">
-        <newLoan v-if="newLoanOpen" @close="newLoanOpen = false" />
+    <Dialog :header="$t('addCard')" v-model:visible="newBudgetOpen" :modal="true">
+        <newBudget v-if="newBudgetOpen" @close="newBudgetOpen = false" />
     </Dialog>
 </template>
 
 <script>
-import newLoan from "./loan_new.vue";
+import newBudget from "./budget_new.vue";
 
 export default {
     components: {
-        newLoan,
+        newBudget,
     },
     data() {
         return {
-            newLoanOpen: false,
+            newBudgetOpen: false,
         };
     },
-    methods: {
-        remainingPayments(payments) {
-            let today = new Date();
-            return payments.filter((i) => new Date(i.date) > today).length;
-        },
-    },
     computed: {
-        loans() {
-            return this.$store.getters.viewData.loans.data || [];
+        budgets() {
+            return this.$store.getters.viewData.budgets.data || [];
         },
     },
 };

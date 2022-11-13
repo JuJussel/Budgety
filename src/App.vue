@@ -3,6 +3,9 @@
 </template>
 
 <script>
+
+
+
 export default {
     created() {
         if (this.$store.getters.user) {
@@ -16,6 +19,7 @@ export default {
 </script>
 
 <style>
+
 body {
     margin: 0;
 }

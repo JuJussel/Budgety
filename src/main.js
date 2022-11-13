@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { store } from "./store";
 import App from "./App.vue";
 import DataService from "./services/data.service";
+import FormatDate from "./services/date.service";
 import { createI18n } from "vue-i18n";
 import messages from "@intlify/unplugin-vue-i18n/messages";
 
@@ -20,8 +21,10 @@ import Message from "primevue/message";
 import Dialog from "primevue/dialog";
 import InputNumber from "primevue/inputnumber";
 import Dropdown from "primevue/dropdown";
-import Textarea from 'primevue/textarea';
-import Calendar from 'primevue/calendar';
+import Textarea from "primevue/textarea";
+import Calendar from "primevue/calendar";
+import InputSwitch from "primevue/inputswitch";
+import Chart from "primevue/chart";
 
 import Home from "./views/home.vue";
 import Login from "./views/login.vue";
@@ -53,6 +56,7 @@ app.use(PrimeVue, { ripple: true });
 app.use(store);
 app.use(router);
 app.use(DataService);
+app.use(FormatDate);
 
 app.component("Card", Card);
 app.component("Button", Button);
@@ -68,6 +72,8 @@ app.component("InputNumber", InputNumber);
 app.component("Dropdown", Dropdown);
 app.component("Textarea", Textarea);
 app.component("Calendar", Calendar);
+app.component("InputSwitch", InputSwitch);
+app.component("Chart", Chart);
 
 app.directive("ripple", Ripple);
 

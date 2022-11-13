@@ -14,7 +14,15 @@
             <Dropdown
                 v-model="newLoan.data.owner"
                 :options="$store.getters.owners"
-                :editable="true"
+            />
+        </div>
+        <div class="field">
+            <label> {{ $t("payFrom") }} </label>
+            <Dropdown
+                v-model="newLoan.data.account"
+                :options="accounts"
+                optionLabel="name"
+                optionValue="_id"
             />
         </div>
         <div class="field">
@@ -54,6 +62,7 @@
                     newLoan.data.owner === '' ||
                     newLoan.data.payments === '' ||
                     newLoan.data.startDate === '' ||
+                    newLoan.data.account === '' ||
                     newLoan.data.balance === null
                 "
             />
@@ -70,11 +79,12 @@ export default {
                 open: false,
                 loading: false,
                 data: {
-                    name: "1",
-                    owner: "1",
-                    balance: 1,
+                    name: "",
+                    owner: "",
+                    balance: 0,
                     payments: "",
-                    startDate: "1",
+                    startDate: "",
+                    account: "",
                 },
             },
         };
@@ -106,6 +116,13 @@ export default {
                 this.$store.commit("ADD_ITEM", ["loans", newLoan]);
                 this.$emit("close");
             });
+        },
+    },
+    computed: {
+        accounts() {
+            return this.$store.getters.viewData.accounts.data?.filter(
+                (i) => i.owner === this.newLoan.data.owner
+            );
         },
     },
 };

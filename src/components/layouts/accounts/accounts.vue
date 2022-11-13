@@ -26,8 +26,8 @@
                             currency: "JPY",
                         })
                     }}
-                </template></Column
-            >
+                </template>
+            </Column>
         </DataTable>
     </div>
 

@@ -5,8 +5,9 @@
             <Card>
                 <template #content>
                     <h2 style="margin: 0">Budgety</h2>
-                    <Avatar icon="pi pi-user" class="mr-2" shape="circle"
-                /></template>
+                    <Button @click="logOut" icon="pi pi-sign-in" class="p-button-rounded p-button-secondary p-button-outlined" style="width: 30px; height: 30px"/>
+
+                    </template>
             </Card>
         </div>
         <div class="main-content">
@@ -54,11 +55,19 @@
 <script>
 import Accounts from "../components/layouts/accounts";
 import Loans from "../components/layouts/loans";
+import Cards from "../components/layouts/cards";
+import Budgets from "../components/layouts/budgets";
+import Cashflow from "../components/layouts/cashflow";
+import Charts from "../components/layouts/charts";
 
 export default {
     components: {
         Accounts,
         Loans,
+        Cards,
+        Budgets,
+        Cashflow,
+        Charts
     },
     created() {
         if (this.$store.getters.user) {
@@ -69,40 +78,39 @@ export default {
         this.prefetchData();
     },
     methods: {
+        logOut() {
+            this.$store.commit('CLEAR_STORE');
+            this.$router.push('/login');
+        },
         prefetchData() {
-            let accounts = {
-                collection: "accounts",
-                filter: {},
-            };
-            this.$dataService("find", accounts).then((res) =>
+
+            let viewDataToFetch = this.menuItems.filter(i => i.enableData)
+            viewDataToFetch.forEach(item => {
+                let fetchData = {
+                    collection: item.name,
+                    filter: {}
+                }
+                this.$dataService("find", fetchData).then((res) =>
                 this.$store.commit("SET_VIEW_DATA", [
-                    "accounts",
+                    item.name,
                     { data: res.documents },
                 ])
             );
-            let loans = {
-                collection: "loans",
-                filter: {},
-            };
-            this.$dataService("find", loans).then((res) =>
-                this.$store.commit("SET_VIEW_DATA", [
-                    "loans",
-                    { data: res.documents },
-                ])
-            );
+
+
+            })
         },
     },
     data() {
         return {
             menuItems: [
-                { name: "dashboard", icon: null },
-                { name: "accounts", icon: null },
-                { name: "loans", icon: null },
-                { name: "cards", icon: null },
-                { name: "cashflow", icon: null },
-                { name: "categories", icon: null },
-                { name: "budgets", icon: null },
-                { name: "graphs", icon: null },
+                { name: "dashboard", icon: null, enableData: false },
+                { name: "accounts", icon: null, enableData: true },
+                { name: "loans", icon: null, enableData: true },
+                { name: "cards", icon: null, enableData: true },
+                { name: "cashflow", icon: null, enableData: true },
+                { name: "budgets", icon: null, enableData: true },
+                { name: "charts", icon: null, enableData: false },
             ],
         };
     },
@@ -127,7 +135,7 @@ export default {
     width: 100%;
     position: absolute;
     grid-template-rows: 60px calc(100% - 60px);
-    background: #eff3f8;
+    background: var(--surface-ground);;
     margin: -8px;
 }
 

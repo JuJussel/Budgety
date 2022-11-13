@@ -14,7 +14,6 @@ var defaultState = function () {
             loans: { data: null },
             cards: { data: null },
             cashflow: { data: null },
-            categories: { data: null },
             budgets: { data: null },
         },
     };
@@ -48,7 +47,19 @@ export const store = createStore({
             });
             return types;
         },
+        categories: function (state) {
+            let categories = [];
+            state.viewData.budgets.data?.forEach((i) => {
+                let index = categories.indexOf(i.category);
+                if (index < 0) categories.push(i.category);
+            });
+            state.viewData.cashflow.data?.forEach((i) => {
+                let index = categories.indexOf(i.category);
+                if (index < 0) categories.push(i.category);
+            });
 
+            return categories;
+        },
     },
 
     mutations: {
@@ -56,7 +67,7 @@ export const store = createStore({
             Object.assign(state, defaultState());
         },
         RESET_VIEW_DATA(state) {
-            state.viewData = defaultState().viewData
+            state.viewData = defaultState().viewData;
         },
         SET_ACTIVE_VIEW(state, view) {
             state.activeView = view;
