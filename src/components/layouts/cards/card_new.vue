@@ -63,6 +63,7 @@ export default {
                     name: "",
                     owner: "",
                     account: "",
+                    type: "card",
                 },
             },
         };
@@ -72,19 +73,19 @@ export default {
             this.newCard.loading = true;
             var newCard = this.newCard.data;
             let query = {
-                collection: "cards",
+                collection: "entries",
                 document: newCard,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newCard.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["cards", newCard]);
+                this.$store.commit("ADD_ENTRY", newCard);
                 this.$emit("close");
             });
         },
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData.accounts.data?.filter(
+            return this.$store.getters.viewData.accounts?.filter(
                 (i) => i.owner === this.newCard.data.owner
             );
         },

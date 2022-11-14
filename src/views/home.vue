@@ -5,9 +5,17 @@
             <Card>
                 <template #content>
                     <h2 style="margin: 0">Budgety</h2>
-                    <Button @click="logOut" icon="pi pi-sign-in" class="p-button-rounded p-button-secondary p-button-outlined" style="width: 30px; height: 30px"/>
-
-                    </template>
+                    <Button
+                        @click="logOut"
+                        icon="pi pi-sign-in"
+                        class="
+                            p-button-rounded
+                            p-button-secondary
+                            p-button-outlined
+                        "
+                        style="width: 30px; height: 30px"
+                    />
+                </template>
             </Card>
         </div>
         <div class="main-content">
@@ -67,7 +75,7 @@ export default {
         Cards,
         Budgets,
         Cashflow,
-        Charts
+        Charts,
     },
     created() {
         if (this.$store.getters.user) {
@@ -79,26 +87,33 @@ export default {
     },
     methods: {
         logOut() {
-            this.$store.commit('CLEAR_STORE');
-            this.$router.push('/login');
+            this.$store.commit("CLEAR_STORE");
+            this.$router.push("/login");
         },
         prefetchData() {
+            let fetchData = {
+                collection: "entries",
+                filter: {},
+            };
 
-            let viewDataToFetch = this.menuItems.filter(i => i.enableData)
-            viewDataToFetch.forEach(item => {
-                let fetchData = {
-                    collection: item.name,
-                    filter: {}
-                }
-                this.$dataService("find", fetchData).then((res) =>
-                this.$store.commit("SET_VIEW_DATA", [
-                    item.name,
-                    { data: res.documents },
-                ])
+            this.$dataService("find", fetchData).then((res) =>
+                this.$store.commit("SET_ENTRIES", res.documents)
             );
 
+            // let viewDataToFetch = this.menuItems.filter(i => i.enableData)
+            // viewDataToFetch.forEach(item => {
+            //     let fetchData = {
+            //         collection: item.name,
+            //         filter: {}
+            //     }
+            //     this.$dataService("find", fetchData).then((res) =>
+            //     this.$store.commit("SET_VIEW_DATA", [
+            //         item.name,
+            //         { data: res.documents },
+            //     ])
+            // );
 
-            })
+            // })
         },
     },
     data() {
@@ -135,7 +150,7 @@ export default {
     width: 100%;
     position: absolute;
     grid-template-rows: 60px calc(100% - 60px);
-    background: var(--surface-ground);;
+    background: var(--surface-ground);
     margin: -8px;
 }
 

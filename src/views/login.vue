@@ -68,7 +68,7 @@ export default {
             this.loading = true;
             this.error = null;
             let body = {
-                collection: "accounts",
+                collection: "entries",
                 limit: 1,
                 filter: {},
             };

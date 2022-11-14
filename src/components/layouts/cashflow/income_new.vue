@@ -97,7 +97,7 @@ export default {
                     amount: 0,
                     date: "",
                     type: "income",
-                    repeat: false
+                    repeat: false,
                 },
             },
         };
@@ -107,19 +107,19 @@ export default {
             this.newIncome.loading = true;
             var newIncome = this.newIncome.data;
             let query = {
-                collection: "cashflow",
+                collection: "entries",
                 document: newIncome,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newIncome.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["cashflow", newIncome]);
+                this.$store.commit("ADD_ENTRY", newIncome);
                 this.$emit("close");
             });
         },
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData.accounts.data?.filter(
+            return this.$store.getters.viewData.accounts.filter(
                 (i) => i.owner === this.newIncome.data.owner
             );
         },

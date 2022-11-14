@@ -9,12 +9,14 @@ var defaultState = function () {
     return {
         user: null,
         activeView: "dashboard",
+        entries: null,
         viewData: {
-            accounts: { data: null },
-            loans: { data: null },
-            cards: { data: null },
-            cashflow: { data: null },
-            budgets: { data: null },
+            accounts: [],
+            loans: [],
+            cards: [],
+            income: [],
+            expenses: [],
+            budgets: [],
         },
     };
 };
@@ -28,32 +30,37 @@ export const store = createStore({
     getters: {
         activeView: (state) => state.activeView,
         user: (state) => state.user,
-        viewData: (state) => state.viewData,
+        viewData: function (state) {
+            return {
+                accounts: state.entries.filter(i => i.type === 'account') || [],
+                loans: state.entries.filter(i => i.type === 'loan') || [],
+                cards: state.entries.filter(i => i.type === 'card') || [],
+                expenses: state.entries.filter(i => i.type === 'expense') || [],
+                income: state.entries.filter(i => i.type === 'income') || [],
+                budgets: state.entries.filter(i => i.type === 'budget') || []
+            }
+        },
+        entries: (state) => state.entries,
         owners: function (state) {
             let owners = [];
-            state.viewData.accounts.data?.forEach((e) => {
+            state.entries?.forEach((e) => {
                 e.owner && owners.indexOf(e.owner) === -1
                     ? owners.push(e.owner)
                     : null;
             });
             return owners;
         },
-        accountTypes: function (state) {
-            let types = [];
-            state.viewData.accounts.data?.forEach((e) => {
-                e.type && types.indexOf(e.type) === -1
-                    ? types.push(e.type)
-                    : null;
-            });
-            return types;
-        },
-        categories: function (state) {
+        categories: function (state, getters) {
             let categories = [];
-            state.viewData.budgets.data?.forEach((i) => {
+            getters.viewData.budgets?.forEach((i) => {
                 let index = categories.indexOf(i.category);
                 if (index < 0) categories.push(i.category);
             });
-            state.viewData.cashflow.data?.forEach((i) => {
+            getters.viewData.income?.forEach((i) => {
+                let index = categories.indexOf(i.category);
+                if (index < 0) categories.push(i.category);
+            });
+            getters.viewData.expenses?.forEach((i) => {
                 let index = categories.indexOf(i.category);
                 if (index < 0) categories.push(i.category);
             });
@@ -63,6 +70,15 @@ export const store = createStore({
     },
 
     mutations: {
+        SET_ENTRIES(state, data) {
+            state.entries = data
+        },
+        ADD_ENTRY(state, data) {
+            state.entries.push(data)
+        },
+        UPDATE_ENTRIY(state) {
+
+        },
         CLEAR_STORE(state) {
             Object.assign(state, defaultState());
         },
@@ -72,14 +88,8 @@ export const store = createStore({
         SET_ACTIVE_VIEW(state, view) {
             state.activeView = view;
         },
-        SET_VIEW_DATA(state, data) {
-            Object.assign(state.viewData[data[0]], data[1]);
-        },
         SET_USER(state, data) {
             state.user = data;
-        },
-        ADD_ITEM(state, data) {
-            state.viewData[data[0]].data.push(data[1]);
         },
     },
     actions: {},

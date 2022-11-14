@@ -102,7 +102,7 @@ export default {
                     date: "",
                     type: "expense",
                     repeat: false,
-                    endDate: ""
+                    endDate: "",
                 },
             },
         };
@@ -112,19 +112,19 @@ export default {
             this.newExpense.loading = true;
             var newExpense = this.newExpense.data;
             let query = {
-                collection: "cashflow",
+                collection: "entries",
                 document: newExpense,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newExpense.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["cashflow", newExpense]);
+                this.$store.commit("ADD_ENTRY", newExpense);
                 this.$emit("close");
             });
         },
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData.accounts.data?.filter(
+            return this.$store.getters.viewData.accounts.filter(
                 (i) => i.owner === this.newExpense.data.owner
             );
         },

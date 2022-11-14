@@ -56,7 +56,7 @@
 
             <Button
                 @click="createnewBudget"
-                :label="$t('addLoan')"
+                :label="$t('addBudget')"
                 class="p-button-sm"
                 :disabled="
                     newBudget.data.name === '' ||
@@ -82,7 +82,8 @@ export default {
                     owner: "",
                     account: "",
                     category: "",
-                    budget: ""
+                    budget: "",
+                    type: "budget",
                 },
             },
         };
@@ -92,19 +93,19 @@ export default {
             this.newBudget.loading = true;
             var newBudget = this.newBudget.data;
             let query = {
-                collection: "budgets",
+                collection: "entries",
                 document: newBudget,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newBudget.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["budgets", newBudget]);
+                this.$store.commit("ADD_ENTRY", newBudget);
                 this.$emit("close");
             });
         },
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData.accounts.data?.filter(
+            return this.$store.getters.viewData.accounts?.filter(
                 (i) => i.owner === this.newBudget.data.owner
             );
         },

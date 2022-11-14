@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="!$store.getters.viewData.loans.data"
+        v-if="!$store.getters.entries"
         style="display: flex; justify-items: center"
     >
         <ProgressSpinner />
@@ -21,9 +21,9 @@
             <Column field="account" :header="$t('payFrom')">
                 <template #body="slotProps">
                     {{
-                        $store.getters.viewData.accounts.data?.find(
+                        $store.getters.viewData.accounts?.find(
                             (i) => i._id === slotProps.data.account
-                        ).name
+                        )?.name
                     }}
                 </template>
             </Column>
@@ -69,7 +69,7 @@ export default {
     },
     computed: {
         loans() {
-            return this.$store.getters.viewData.loans.data || [];
+            return this.$store.getters.viewData.loans || [];
         },
     },
 };

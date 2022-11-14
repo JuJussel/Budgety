@@ -85,6 +85,7 @@ export default {
                     payments: "",
                     startDate: "",
                     account: "",
+                    type: "loan",
                 },
             },
         };
@@ -108,19 +109,19 @@ export default {
             this.newLoan.loading = true;
             var newLoan = this.newLoan.data;
             let query = {
-                collection: "loans",
+                collection: "entries",
                 document: newLoan,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newLoan.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["loans", newLoan]);
+                this.$store.commit("ADD_ENTRY", newLoan);
                 this.$emit("close");
             });
         },
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData.accounts.data?.filter(
+            return this.$store.getters.viewData.accounts?.filter(
                 (i) => i.owner === this.newLoan.data.owner
             );
         },

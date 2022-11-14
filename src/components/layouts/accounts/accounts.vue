@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="!$store.getters.viewData.accounts.data"
+        v-if="!$store.getters.entries"
         style="display: flex; justify-items: center"
     >
         <ProgressSpinner />
@@ -20,12 +20,7 @@
             <Column field="owner" :header="$t('owner')"></Column>
             <Column field="balance" :header="$t('balance')">
                 <template #body="slotProps">
-                    {{
-                        slotProps.data.balance.toLocaleString("ja-JP", {
-                            style: "currency",
-                            currency: "JPY",
-                        })
-                    }}
+                    {{ getBalance(slotProps.data.balance) }}
                 </template>
             </Column>
         </DataTable>
@@ -49,7 +44,7 @@ export default {
     },
     computed: {
         accounts() {
-            return this.$store.getters.viewData?.accounts.data || [];
+            return this.$store.getters.viewData?.accounts || [];
         },
     },
     data() {
@@ -57,6 +52,14 @@ export default {
             newAccountOpen: false,
         };
     },
-    methods: {},
+    methods: {
+        getBalance(balances) {
+            let balance = balances.at(-1);
+            return balance.balance.toLocaleString("ja-JP", {
+                style: "currency",
+                currency: "JPY",
+            });
+        },
+    },
 };
 </script>

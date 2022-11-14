@@ -1,6 +1,6 @@
 <template>
     <div
-        v-if="!$store.getters.viewData.budgets.data"
+        v-if="!$store.getters.entries"
         style="display: flex; justify-items: center"
     >
         <ProgressSpinner />
@@ -21,7 +21,7 @@
             <Column field="account" :header="$t('account')">
                 <template #body="slotProps">
                     {{
-                        $store.getters.viewData.accounts.data?.find(
+                        $store.getters.viewData.accounts?.find(
                             (i) => i._id === slotProps.data.account
                         ).name
                     }}
@@ -40,7 +40,11 @@
             </Column>
         </DataTable>
     </div>
-    <Dialog :header="$t('addCard')" v-model:visible="newBudgetOpen" :modal="true">
+    <Dialog
+        :header="$t('addCard')"
+        v-model:visible="newBudgetOpen"
+        :modal="true"
+    >
         <newBudget v-if="newBudgetOpen" @close="newBudgetOpen = false" />
     </Dialog>
 </template>
@@ -59,7 +63,7 @@ export default {
     },
     computed: {
         budgets() {
-            return this.$store.getters.viewData.budgets.data || [];
+            return this.$store.getters.viewData.budgets || [];
         },
     },
 };

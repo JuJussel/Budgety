@@ -9,14 +9,6 @@
                 style="width: 100%"
             />
         </div>
-        <div class="field">
-            <label> {{ $t("type") }} </label>
-            <Dropdown
-                v-model="newAccount.data.type"
-                :options="$store.getters.accountTypes"
-                :editable="true"
-            />
-        </div>
 
         <div class="field">
             <label> {{ $t("owner") }} </label>
@@ -70,7 +62,7 @@ export default {
                     name: "",
                     owner: "",
                     balance: 0,
-                    type: "",
+                    type: "account",
                 },
             },
         };
@@ -79,13 +71,16 @@ export default {
         createNewAccount() {
             this.newAccount.loading = true;
             var newAccount = this.newAccount.data;
+            newAccount.balance = [
+                { date: new Date(), balance: newAccount.balance },
+            ];
             let query = {
-                collection: "accounts",
+                collection: "entries",
                 document: newAccount,
             };
             this.$dataService("insertOne", query).then((res) => {
                 newAccount.id = res.insertedId;
-                this.$store.commit("ADD_ITEM", ["accounts", newAccount]);
+                this.$store.commit("ADD_ENTRY", newAccount);
                 this.$emit("close");
             });
         },

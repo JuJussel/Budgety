@@ -3,8 +3,14 @@
         <DataTable :value="income">
             <template #empty> {{ $t("noRecordsFound") }} </template>
             <template #header>
-                <div style="display: flex; justify-content: space-between; align-items: center">
-                    <h3 class="m-0"> {{ $t('income') }} </h3>
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    "
+                >
+                    <h3 class="m-0">{{ $t("income") }}</h3>
                     <Button
                         @click="newIncomeOpen = true"
                         :label="$t('addIncome')"
@@ -44,8 +50,14 @@
         <DataTable :value="expenses">
             <template #empty> {{ $t("noRecordsFound") }} </template>
             <template #header>
-                <div style="display: flex; justify-content: space-between; align-items: center">
-                    <h3 class="m-0"> {{ $t('expenses') }} </h3>
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    "
+                >
+                    <h3 class="m-0">{{ $t("expenses") }}</h3>
                     <Button
                         @click="newExpenseOpen = true"
                         :label="$t('addExpense')"
@@ -83,49 +95,53 @@
             </Column>
         </DataTable>
 
-        <Dialog :header="$t('addIncome')" v-model:visible="newIncomeOpen" :modal="true">
+        <Dialog
+            :header="$t('addIncome')"
+            v-model:visible="newIncomeOpen"
+            :modal="true"
+        >
             <newIncome v-if="newIncomeOpen" @close="newIncomeOpen = false" />
         </Dialog>
-        <Dialog :header="$t('addExpense')" v-model:visible="newExpenseOpen" :modal="true">
+        <Dialog
+            :header="$t('addExpense')"
+            v-model:visible="newExpenseOpen"
+            :modal="true"
+        >
             <newExpense v-if="newExpenseOpen" @close="newExpenseOpen = false" />
         </Dialog>
-
     </div>
 </template>
 
 <script>
-
-import newIncome from "./income_new.vue"
-import newExpense from "./expense_new.vue"
+import newIncome from "./income_new.vue";
+import newExpense from "./expense_new.vue";
 
 export default {
     components: {
-        newIncome, newExpense
+        newIncome,
+        newExpense,
     },
     data() {
         return {
             newIncomeOpen: false,
-            newExpenseOpen: false
-        }
+            newExpenseOpen: false,
+        };
     },
     computed: {
         income() {
-            return this.$store.getters.viewData.cashflow.data?.filter(i =>
-                i.type === "income") || [];
+            return this.$store.getters.viewData.income;
         },
         expenses() {
-            return this.$store.getters.viewData.cashflow.data?.filter(i =>
-                i.type === "expense"
-            ) || [];
-        }
-    }
-}
+            return this.$store.getters.viewData.expenses;
+        },
+    },
+};
 </script>
 
 <style scoped>
-    .cashflow-main {
-        display: grid;
-        grid-template-columns: 50% auto;
-        grid-gap: 20px
-    }
+.cashflow-main {
+    display: grid;
+    grid-template-columns: 50% auto;
+    grid-gap: 20px;
+}
 </style>
