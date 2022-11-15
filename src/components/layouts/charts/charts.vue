@@ -1,7 +1,11 @@
 <template>
     <div>
-        <Chart type="line" :data="chartSummary" :options="chartOptions"/>
+        <div class="field">
+            <label for="showOld"> {{ $t("includePastData") }} </label>
+            <InputSwitch inputId="showOld" v-model="showOld" />
+        </div>
 
+        <Chart type="line" :data="chartSummary" :options="chartOptions" />
     </div>
 </template>
 
@@ -11,98 +15,175 @@ export default {
         return {
             period: 40,
             chartOptions: {
-                radius: 0
-            }
-        }
+                radius: 0,
+            },
+            showOld: false,
+        };
     },
     methods: {
         buildExpenses(account) {
-            let budgets = this.$store.getters.viewData.budgets.data?.filter(i => i.account === account._id) || [] //per month
-            let expenses = this.$store.getters.viewData.cashflow.data?.filter(i => i.account === account._id && i.type === 'expense') || []
-            let expensesArray = Array.from('0'.repeat(this.timeline.length));
+            let budgets =
+                this.$store.getters.viewData.budgets?.filter(
+                    (i) => i.account === account._id
+                ) || []; //per month
+            let expenses =
+                this.$store.getters.viewData.cashflow?.filter(
+                    (i) => i.account === account._id && i.type === "expense"
+                ) || [];
+            let expensesArray = Array.from("0".repeat(this.timeline.length));
             console.log(expensesArray);
-            expenses.forEach(ex => {
+            expenses.forEach((ex) => {
                 if (ex.repeat) {
-                    if (ex.endDate !== "") { 
-                        let endDate = new Date(ex.endDate).getFullYear() + this.$t('yearAppend') + new Date(ex.endDate).getMonth()
-                        let endIndex = this.timeline.findIndex(i => i === endDate)
+                    if (ex.endDate !== "") {
+                        let endDate =
+                            new Date(ex.endDate).getFullYear() +
+                            this.$t("yearAppend") +
+                            new Date(ex.endDate).getMonth();
+                        let endIndex = this.timeline.findIndex(
+                            (i) => i === endDate
+                        );
                         for (let index = 0; index < endIndex; index++) {
-                            expensesArray[index] = parseInt(expensesArray[index]) + ex.amount
+                            expensesArray[index] =
+                                parseInt(expensesArray[index]) + ex.amount;
                         }
                     } else {
-                        for (let index = 0; index < expensesArray.length; index++) {
-                            expensesArray[index] = parseInt(expensesArray[index]) + ex.amount
+                        for (
+                            let index = 0;
+                            index < expensesArray.length;
+                            index++
+                        ) {
+                            expensesArray[index] =
+                                parseInt(expensesArray[index]) + ex.amount;
                         }
                     }
                 } else {
-                    let date = new Date(ex.date).getFullYear() + this.$t('yearAppend') + new Date(ex.date).getMonth()
-                    let index = this.timeline.findIndex(i => i === date)
-                    expensesArray[index] = parseInt(expensesArray[index]) + ex.amount
+                    let date =
+                        new Date(ex.date).getFullYear() +
+                        this.$t("yearAppend") +
+                        new Date(ex.date).getMonth();
+                    let index = this.timeline.findIndex((i) => i === date);
+                    expensesArray[index] =
+                        parseInt(expensesArray[index]) + ex.amount;
                 }
             });
 
-            return expensesArray
+            return expensesArray;
         },
         buildIncomes(account) {
-            let incomes = this.$store.getters.viewData.cashflow.data?.filter(i => i.account === account._id && i.type === 'income') || []
+            let incomes =
+                this.$store.getters.viewData.cashflow?.filter(
+                    (i) => i.account === account._id && i.type === "income"
+                ) || [];
             let retunValue = {
-                projected: incomes.reduce((p,c) => p+c.amount, 0),
-                actual: null
-            }
-            return retunValue
-        }
+                projected: incomes.reduce((p, c) => p + c.amount, 0),
+                actual: null,
+            };
+            return retunValue;
+        },
     },
     computed: {
         timeline() {
-            let monthsCount = 12 * this.period;
-            let months = [];
-            for (let index = 0; index < monthsCount; index++) {
-                let today = new Date()
-                let item = today.setMonth(today.getMonth() + index)
-                item = new Date(item).getFullYear() + this.$t('yearAppend') + new Date(item).getMonth()
-                months.push(item)
+            if (this.showOld) {
+                // Get todays date
+                let today = new Date();
+
+                // Build timeline from oldest account entry. Accounts are the first thing created
+                let startDate = null;
+                let accounts = this.$store.getters.viewData.accounts;
+                accounts.forEach((account) => {
+                    let firstEntryDate = new Date(account.balance[0].date);
+                    if (firstEntryDate < startDate || !startDate) {
+                        startDate = firstEntryDate;
+                    }
+                });
+                console.log(startDate);
+                console.log(today);
+
+                // Build date array since then to month before today
+                var months = [];
+
+                while (startDate < today) {
+                    months.push(
+                        startDate.getFullYear() +
+                            this.$t("yearAppend") +
+                            startDate.getMonth()
+                    );
+                    startDate.setMonth(startDate.getMonth() + 1);
+                }
+            } else {
+                var months = [];
             }
-            return months
+
+            let monthsCount = 12 * this.period;
+            for (let index = 0; index < monthsCount; index++) {
+                let today = new Date();
+                let item = today.setMonth(today.getMonth() + index);
+                item =
+                    new Date(item).getFullYear() +
+                    this.$t("yearAppend") +
+                    new Date(item).getMonth();
+                months.push(item);
+            }
+            return months;
         },
         accounts() {
-            let accounts = this.$store.getters.viewData.accounts.data || []
+            let accounts = this.$store.getters.viewData.accounts || [];
             accounts.map((account) => {
-                let expenses = this.buildExpenses(account)
-                let incomes = this.buildIncomes(account).projected
-                let projectedBalance = [account.balance]
+                let expenses = this.buildExpenses(account);
+                let incomes = this.buildIncomes(account).projected;
+                let lastEntry = account.balance.at(-1);
+                let lastEntryDate =
+                    new Date(lastEntry.date).getFullYear() +
+                    this.$t("yearAppend") +
+                    new Date(lastEntry.date).getMonth();
+                let lastEntryBalance = lastEntry.balance;
+
+                let monthDiff = this.$monthDiff(
+                    new Date(lastEntryDate),
+                    new Date()
+                );
+
+                // let pastMovements =
+
+                let startBalance =
+                    lastEntryBalance +
+                    incomes * monthDiff -
+                    expenses * monthDiff;
+
+                let projectedBalance = [startBalance];
+
                 this.timeline.forEach((date, index) => {
-                    let balance = projectedBalance[index] - expenses[index] + incomes
-                    projectedBalance.push(balance)
-                })
-                //Expenses needed
-                account.projectedBalance = projectedBalance
-            })
+                    let balance =
+                        projectedBalance[index] - expenses[index] + incomes;
+                    projectedBalance.push(balance);
+                });
+                account.projectedBalance = projectedBalance;
+            });
             // accounts.map(i => {
             //     i.balance = []
             //     this.timeline.array.forEach(date => {
-            //         let balance = i.balance + 
+            //         let balance = i.balance +
             //     });
             // });
-            return accounts
-            
+            return accounts;
         },
         datasets() {
-            let datasets = []
-            this.accounts.forEach(account => {
+            let datasets = [];
+            this.accounts.forEach((account) => {
                 datasets.push({
-                    label: account.name + ' ' + account.owner + ' projected',
-                    backgroundColor: '#42A5F5',
-                    data: account.projectedBalance
-                })
-            })
-            return datasets
+                    label: account.name + " " + account.owner + " projected",
+                    backgroundColor: "#42A5F5",
+                    data: account.projectedBalance,
+                });
+            });
+            return datasets;
         },
         chartSummary() {
             return {
                 labels: this.timeline,
                 datasets: this.datasets,
-			}
-        }
-    }
-}
+            };
+        },
+    },
+};
 </script>

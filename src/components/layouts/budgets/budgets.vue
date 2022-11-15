@@ -23,7 +23,7 @@
                     {{
                         $store.getters.viewData.accounts?.find(
                             (i) => i._id === slotProps.data.account
-                        ).name
+                        )?.name
                     }}
                 </template>
             </Column>

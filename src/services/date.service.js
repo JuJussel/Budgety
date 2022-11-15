@@ -17,5 +17,13 @@ export default {
                 this.$t("dayAppend")
             );
         };
+        app.config.globalProperties.$monthDiff = function (d1, d2) {
+            // Old date first
+            var months;
+            months = (d2.getFullYear() - d1.getFullYear()) * 12;
+            months -= d1.getMonth();
+            months += d2.getMonth();
+            return months <= 0 ? 0 : months;
+        }
     },
 };
