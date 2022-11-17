@@ -13,7 +13,7 @@
 export default {
     data() {
         return {
-            period: 40,
+            period: 2,
             chartOptions: {
                 radius: 0,
             },
@@ -69,17 +69,6 @@ export default {
 
             return expensesArray;
         },
-        buildIncomes(account) {
-            let incomes =
-                this.$store.getters.viewData.cashflow?.filter(
-                    (i) => i.account === account._id && i.type === "income"
-                ) || [];
-            let retunValue = {
-                projected: incomes.reduce((p, c) => p + c.amount, 0),
-                actual: null,
-            };
-            return retunValue;
-        },
     },
     computed: {
         timeline() {
@@ -96,8 +85,6 @@ export default {
                         startDate = firstEntryDate;
                     }
                 });
-                console.log(startDate);
-                console.log(today);
 
                 // Build date array since then to month before today
                 var months = [];
@@ -129,35 +116,79 @@ export default {
         accounts() {
             let accounts = this.$store.getters.viewData.accounts || [];
             accounts.map((account) => {
-                let expenses = this.buildExpenses(account);
-                let incomes = this.buildIncomes(account).projected;
-                let lastEntry = account.balance.at(-1);
-                let lastEntryDate =
-                    new Date(lastEntry.date).getFullYear() +
-                    this.$t("yearAppend") +
-                    new Date(lastEntry.date).getMonth();
-                let lastEntryBalance = lastEntry.balance;
+                account.projectedBalance = [];
+                this.timeline.forEach((item) => {
+                    let manualBalance = true;
+                    let accountBalance = account.balance.find((b) => {
+                        let date =
+                            new Date(b.date).getFullYear() +
+                            this.$t("yearAppend") +
+                            new Date(b.date).getMonth();
+                        return date === item;
+                    })?.balance;
 
-                let monthDiff = this.$monthDiff(
-                    new Date(lastEntryDate),
-                    new Date()
-                );
+                    if (!accountBalance) {
+                        if (account.projectedBalance.at(-1)) {
+                            accountBalance = account.projectedBalance.at(-1);
+                            manualBalance = false;
+                        } else {
+                            accountBalance = account.balance.at(-1).balance;
+                        }
+                    }
+
+                    if (!manualBalance) {
+                        let income =
+                            this.$store.getters.viewData.income.find((i) => {
+                                let date =
+                                    new Date(i.date).getFullYear() +
+                                    this.$t("yearAppend") +
+                                    new Date(i.date).getMonth();
+                                if (date === item) {
+                                    console.log(date);
+                                    console.log(item);
+                                }
+                                return date === item;
+                            })?.amount || 0;
+                        let expenses = 0;
+
+                        accountBalance = accountBalance + income - expenses;
+                    }
+                    account.projectedBalance.push(accountBalance);
+                });
+
+                // let expenses = this.buildExpenses(account);
+                // let incomes = this.buildIncomes(account).projected;
+
+                // console.log(expenses);
+                // console.log(incomes);
+
+                // let lastEntry = account.balance.at(-1);
+                // let lastEntryDate =
+                //     new Date(lastEntry.date).getFullYear() +
+                //     this.$t("yearAppend") +
+                //     new Date(lastEntry.date).getMonth();
+                // let lastEntryBalance = lastEntry.balance;
+
+                // let monthDiff = this.$monthDiff(
+                //     new Date(lastEntryDate),
+                //     new Date()
+                // );
 
                 // let pastMovements =
 
-                let startBalance =
-                    lastEntryBalance +
-                    incomes * monthDiff -
-                    expenses * monthDiff;
+                // let startBalance =
+                //     lastEntryBalance +
+                //     incomes * monthDiff -
+                //     expenses * monthDiff;
 
-                let projectedBalance = [startBalance];
+                // let projectedBalance = [startBalance];
 
-                this.timeline.forEach((date, index) => {
-                    let balance =
-                        projectedBalance[index] - expenses[index] + incomes;
-                    projectedBalance.push(balance);
-                });
-                account.projectedBalance = projectedBalance;
+                // this.timeline.forEach((date, index) => {
+                //     let balance =
+                //         projectedBalance[index] - expenses[index] + incomes;
+                //     projectedBalance.push(balance);
+                // });
+                // account.projectedBalance = projectedBalance;
             });
             // accounts.map(i => {
             //     i.balance = []
