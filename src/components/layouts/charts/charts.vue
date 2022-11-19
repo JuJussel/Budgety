@@ -1,6 +1,11 @@
 <template>
     <div>
         <div class="field">
+            <label for="budget"> {{ $t("budget") }} </label>
+            <InputNumber v-model="period" inputId="budget" />
+        </div>
+
+        <div class="field">
             <label for="showOld"> {{ $t("includePastData") }} </label>
             <InputSwitch inputId="showOld" v-model="showOld" />
         </div>
@@ -75,6 +80,7 @@ export default {
             if (this.showOld) {
                 // Get todays date
                 let today = new Date();
+                today.setMonth(today.getMonth() - 1);
 
                 // Build timeline from oldest account entry. Accounts are the first thing created
                 let startDate = null;
@@ -113,11 +119,37 @@ export default {
             }
             return months;
         },
+
         accounts() {
             let accounts = this.$store.getters.viewData.accounts || [];
             accounts.map((account) => {
+                // Better do:
+                // Calculate balances from last manual entry
+                // then slice the array at the start date of the time axis
+
                 account.projectedBalance = [];
-                this.timeline.forEach((item) => {
+
+                let accountTimeline = [];
+                let lastManualBalanceDate = new Date(
+                    account.balance.at(-1).date
+                );
+                let today = new Date();
+                today.setMonth(today.getMonth() - 1);
+
+                while (lastManualBalanceDate < today) {
+                    accountTimeline.push(
+                        new Date(lastManualBalanceDate).getFullYear() +
+                            this.$t("yearAppend") +
+                            new Date(lastManualBalanceDate).getMonth()
+                    );
+                    lastManualBalanceDate.setMonth(
+                        lastManualBalanceDate.getMonth() + 1
+                    );
+                }
+
+                accountTimeline = accountTimeline.concat(this.timeline);
+
+                accountTimeline.forEach((item) => {
                     let manualBalance = true;
                     let accountBalance = account.balance.find((b) => {
                         let date =
@@ -143,11 +175,7 @@ export default {
                                     new Date(i.date).getFullYear() +
                                     this.$t("yearAppend") +
                                     new Date(i.date).getMonth();
-                                if (date === item) {
-                                    console.log(date);
-                                    console.log(item);
-                                }
-                                return date === item;
+                                return date === item || item.repeat;
                             })?.amount || 0;
                         let expenses = 0;
 
@@ -156,6 +184,13 @@ export default {
                     account.projectedBalance.push(accountBalance);
                 });
 
+                let startIndex = account.projectedBalance.findIndex(
+                    (i) => i === this.timeline[0]
+                );
+                account.projectedBalance = account.projectedBalance.splice(
+                    startIndex,
+                    1
+                );
                 // let expenses = this.buildExpenses(account);
                 // let incomes = this.buildIncomes(account).projected;
 
