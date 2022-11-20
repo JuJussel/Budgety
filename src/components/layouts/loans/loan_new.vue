@@ -93,8 +93,6 @@ export default {
     methods: {
         createNewLoan() {
             let payments = this.newLoan.data.payments.split("\n");
-            console.log(payments);
-            return;
             let paymentsArr = [];
             let startDate = new Date(this.newLoan.data.startDate);
             payments.forEach((el, index) => {

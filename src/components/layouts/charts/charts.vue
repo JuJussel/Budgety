@@ -187,11 +187,10 @@ export default {
                                     );
                                 }
                             )?.amount || 0;
-                        console.log(income);
 
                         let expenses =
-                            this.$store.getters.viewData.expenses.find(
-                                (expense) => {
+                            this.$store.getters.viewData.expenses
+                                .filter((expense) => {
                                     let expenseDate =
                                         new Date(expense.date).getFullYear() +
                                         this.$t("yearAppend") +
@@ -201,8 +200,12 @@ export default {
                                         (expenseDate === timeLineDate ||
                                             expense.repeat)
                                     );
-                                }
-                            )?.amount || 0;
+                                })
+                                ?.reduce(
+                                    (accum, current) => accum + current.amount,
+                                    0
+                                ) || 0;
+
                         console.log(expenses);
                         accountBalance = accountBalance + income - expenses;
                     }
