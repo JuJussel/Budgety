@@ -25,7 +25,7 @@
                 optionValue="_id"
             />
         </div>
-        <div class="field">
+        <!-- <div class="field">
             <label for="balance"> {{ $t('balance') }} </label>
             <InputNumber
                 v-model="newLoan.data.balance"
@@ -34,7 +34,7 @@
                 currency="JPY"
                 locale="jp-JP"
             />
-        </div>
+        </div> -->
         <div class="field">
             <label for="startDate"> {{ $t('startDate') }} </label>
             <Calendar inputId="startDate" v-model="newLoan.data.startDate" autocomplete="off" />
@@ -92,14 +92,14 @@ export default {
     },
     methods: {
         createNewLoan() {
-            let payments = this.newLoan.data.payments
-                .slice(this.newLoan.data.payments.indexOf("\n") + 1)
-                .split("\n");
+            let payments = this.newLoan.data.payments.split("\n");
+            console.log(payments);
+            return;
             let paymentsArr = [];
             let startDate = new Date(this.newLoan.data.startDate);
             payments.forEach((el, index) => {
                 let date = new Date(
-                    startDate.setMonth(startDate.getMonth() + index)
+                    startDate.setMonth(startDate.getMonth() + 1)
                 );
                 let item = { date: date, payment: el };
                 paymentsArr.push(item);

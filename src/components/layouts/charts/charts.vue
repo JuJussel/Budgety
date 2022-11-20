@@ -21,6 +21,10 @@ export default {
             period: 2,
             chartOptions: {
                 radius: 0,
+                interaction: {
+                    intersect: false,
+                    mode: "index",
+                },
             },
             showOld: false,
         };
@@ -149,14 +153,14 @@ export default {
 
                 accountTimeline = accountTimeline.concat(this.timeline);
 
-                accountTimeline.forEach((item) => {
+                accountTimeline.forEach((timeLineDate) => {
                     let manualBalance = true;
                     let accountBalance = account.balance.find((b) => {
                         let date =
                             new Date(b.date).getFullYear() +
                             this.$t("yearAppend") +
                             new Date(b.date).getMonth();
-                        return date === item;
+                        return date === timeLineDate;
                     })?.balance;
 
                     if (!accountBalance) {
@@ -170,27 +174,53 @@ export default {
 
                     if (!manualBalance) {
                         let income =
-                            this.$store.getters.viewData.income.find((i) => {
-                                let date =
-                                    new Date(i.date).getFullYear() +
-                                    this.$t("yearAppend") +
-                                    new Date(i.date).getMonth();
-                                return date === item || item.repeat;
-                            })?.amount || 0;
-                        let expenses = 0;
+                            this.$store.getters.viewData.income.find(
+                                (income) => {
+                                    let incomeDate =
+                                        new Date(income.date).getFullYear() +
+                                        this.$t("yearAppend") +
+                                        new Date(income.date).getMonth();
+                                    return (
+                                        income.account === account._id &&
+                                        (incomeDate === income.date ||
+                                            income.repeat)
+                                    );
+                                }
+                            )?.amount || 0;
+                        console.log(income);
 
+                        let expenses =
+                            this.$store.getters.viewData.expenses.find(
+                                (expense) => {
+                                    let expenseDate =
+                                        new Date(expense.date).getFullYear() +
+                                        this.$t("yearAppend") +
+                                        new Date(expense.date).getMonth();
+                                    return (
+                                        expense.account === account._id &&
+                                        (expenseDate === timeLineDate ||
+                                            expense.repeat)
+                                    );
+                                }
+                            )?.amount || 0;
+                        console.log(expenses);
                         accountBalance = accountBalance + income - expenses;
                     }
                     account.projectedBalance.push(accountBalance);
                 });
 
-                let startIndex = account.projectedBalance.findIndex(
-                    (i) => i === this.timeline[0]
+                let timeLineLength = this.timeline.length;
+                account.projectedBalance = account.projectedBalance.slice(
+                    -timeLineLength
                 );
-                account.projectedBalance = account.projectedBalance.splice(
-                    startIndex,
-                    1
-                );
+
+                // account.projectedBalance = account.projectedBalance.filter(
+                //     (b) => {
+                //         console.log(new Date(b) < new Date(this.timeline[0]));
+                //         b < this.timeline[0];
+                //     }
+                // );
+
                 // let expenses = this.buildExpenses(account);
                 // let incomes = this.buildIncomes(account).projected;
 
