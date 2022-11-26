@@ -24,7 +24,7 @@
             <Column field="account" :header="$t('account')">
                 <template #body="slotProps">
                     {{
-                        $store.getters.viewData.accounts.data?.find(
+                        $store.getters.viewData.accounts?.find(
                             (i) => i._id === slotProps.data.account
                         ).name
                     }}
@@ -71,7 +71,7 @@
             <Column field="account" :header="$t('account')">
                 <template #body="slotProps">
                     {{
-                        $store.getters.viewData.accounts.data?.find(
+                        $store.getters.viewData.accounts?.find(
                             (i) => i._id === slotProps.data.account
                         ).name
                     }}

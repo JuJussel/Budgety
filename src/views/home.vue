@@ -141,6 +141,9 @@ export default {
 .top-menu-bar > div > .p-card-body {
     padding: 0;
 }
+.field * {
+    display: flex;
+}
 </style>
 
 <style scoped>

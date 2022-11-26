@@ -53,6 +53,10 @@
             <label for="repeat"> {{ $t('monthly') }} </label>
             <InputSwitch inputId="repeat" v-model="newIncome.data.repeat" />
         </div>
+        <div class="field" v-if="newIncome.data.repeat">
+            <label for="endDate"> {{ $t('endDate') }} </label>
+            <Calendar inputId="endDate" v-model="newIncome.data.endDate" autocomplete="off" />
+        </div>
 
 
 
@@ -98,6 +102,7 @@ export default {
                     date: "",
                     type: "income",
                     repeat: false,
+                    endDate: null,
                 },
             },
         };

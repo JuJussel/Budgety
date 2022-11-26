@@ -36,5 +36,6 @@
     "dayAppend": "",
     "monthly": "Monthly",
     "endDate": "End Date",
-    "includePastData": "Include Past Data"
+    "includePastData": "Include Past Data",
+    "accumulated": "Accumulated"
 }

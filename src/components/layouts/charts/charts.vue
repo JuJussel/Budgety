@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <div class="field">
             <label for="budget"> {{ $t("budget") }} </label>
             <InputNumber v-model="period" inputId="budget" />
@@ -10,7 +11,13 @@
             <InputSwitch inputId="showOld" v-model="showOld" />
         </div>
 
-        <Chart type="line" :data="chartSummary" :options="chartOptions" />
+        <div style="height: 500px">
+            <Chart
+                :data="chartSummary"
+                :options="chartOptions"
+                style="height: 100%"
+            />
+        </div>
     </div>
 </template>
 
@@ -19,7 +26,14 @@ export default {
     data() {
         return {
             period: 2,
+            lineColors: [
+                '#3f51b5',
+                '#607d8b',
+                '#9c27b0'
+            ],
             chartOptions: {
+                maintainAspectRatio: false,
+                responsive: true,
                 radius: 0,
                 interaction: {
                     intersect: false,
@@ -83,14 +97,14 @@ export default {
         timeline() {
             if (this.showOld) {
                 // Get todays date
-                let today = new Date();
-                today.setMonth(today.getMonth() - 1);
+                let today = this.$dayjs();
+                //today.setMonth(today.getMonth() - 1);
 
                 // Build timeline from oldest account entry. Accounts are the first thing created
                 let startDate = null;
                 let accounts = this.$store.getters.viewData.accounts;
                 accounts.forEach((account) => {
-                    let firstEntryDate = new Date(account.balance[0].date);
+                    let firstEntryDate = this.$dayjs(account.balance[0].date);
                     if (firstEntryDate < startDate || !startDate) {
                         startDate = firstEntryDate;
                     }
@@ -100,12 +114,8 @@ export default {
                 var months = [];
 
                 while (startDate < today) {
-                    months.push(
-                        startDate.getFullYear() +
-                            this.$t("yearAppend") +
-                            startDate.getMonth()
-                    );
-                    startDate.setMonth(startDate.getMonth() + 1);
+                    months.push(this.$dayjs(startDate).format("YYYY/MM"));
+                    startDate = this.$dayjs(startDate).add(1, "month");
                 }
             } else {
                 var months = [];
@@ -113,13 +123,8 @@ export default {
 
             let monthsCount = 12 * this.period;
             for (let index = 0; index < monthsCount; index++) {
-                let today = new Date();
-                let item = today.setMonth(today.getMonth() + index);
-                item =
-                    new Date(item).getFullYear() +
-                    this.$t("yearAppend") +
-                    new Date(item).getMonth();
-                months.push(item);
+                let item = this.$dayjs().add(index, "month");
+                months.push(this.$dayjs(item).format("YYYY/MM"));
             }
             return months;
         },
@@ -134,21 +139,16 @@ export default {
                 account.projectedBalance = [];
 
                 let accountTimeline = [];
-                let lastManualBalanceDate = new Date(
+                let lastManualBalanceDate = this.$dayjs(
                     account.balance.at(-1).date
                 );
-                let today = new Date();
-                today.setMonth(today.getMonth() - 1);
+                let today = this.$dayjs().subtract(1, "month");
 
                 while (lastManualBalanceDate < today) {
-                    accountTimeline.push(
-                        new Date(lastManualBalanceDate).getFullYear() +
-                            this.$t("yearAppend") +
-                            new Date(lastManualBalanceDate).getMonth()
-                    );
-                    lastManualBalanceDate.setMonth(
-                        lastManualBalanceDate.getMonth() + 1
-                    );
+                    accountTimeline.push(lastManualBalanceDate);
+                    lastManualBalanceDate = this.$dayjs(
+                        lastManualBalanceDate
+                    ).add(1, "month");
                 }
 
                 accountTimeline = accountTimeline.concat(this.timeline);
@@ -156,11 +156,8 @@ export default {
                 accountTimeline.forEach((timeLineDate) => {
                     let manualBalance = true;
                     let accountBalance = account.balance.find((b) => {
-                        let date =
-                            new Date(b.date).getFullYear() +
-                            this.$t("yearAppend") +
-                            new Date(b.date).getMonth();
-                        return date === timeLineDate;
+                        let date = this.$dayjs(b.date);
+                        return this.$dayjs(date).isSame(timeLineDate, "month");
                     })?.balance;
 
                     if (!accountBalance) {
@@ -173,108 +170,154 @@ export default {
                     }
 
                     if (!manualBalance) {
-                        let income =
-                            this.$store.getters.viewData.income.find(
-                                (income) => {
-                                    let incomeDate =
-                                        new Date(income.date).getFullYear() +
-                                        this.$t("yearAppend") +
-                                        new Date(income.date).getMonth();
-                                    return (
-                                        income.account === account._id &&
-                                        (incomeDate === income.date ||
-                                            income.repeat)
-                                    );
+                        let incomeAccu = 0;
+                        this.$store.getters.viewData.income.forEach(
+                            (income) => {
+                                if (income.account !== account._id) return;
+                                if (
+                                    this.$dayjs(income.date).isAfter(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    return;
                                 }
-                            )?.amount || 0;
+                                if (
+                                    this.$dayjs(income.date).isSame(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    incomeAccu = incomeAccu + income.amount;
+                                    return;
+                                }
+                                if (income.repeat && !income.endDate) {
+                                    incomeAccu = incomeAccu + income.amount;
+                                    return;
+                                }
+                                if (
+                                    income.repeat &&
+                                    this.$dayjs(income.endDate).isSameOrAfter(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    incomeAccu = incomeAccu + income.amount;
+                                }
+                            }
+                        );
 
-                        let expenses =
-                            this.$store.getters.viewData.expenses
-                                .filter((expense) => {
-                                    let expenseDate =
-                                        new Date(expense.date).getFullYear() +
-                                        this.$t("yearAppend") +
-                                        new Date(expense.date).getMonth();
-                                    return (
-                                        expense.account === account._id &&
-                                        (expenseDate === timeLineDate ||
-                                            expense.repeat)
-                                    );
-                                })
-                                ?.reduce(
-                                    (accum, current) => accum + current.amount,
-                                    0
-                                ) || 0;
+                        let expensesAccu = 0;
+                        this.$store.getters.viewData.expenses.forEach(
+                            (expense) => {
+                                if (expense.account !== account._id) return;
+                                if (
+                                    this.$dayjs(expense.date).isAfter(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    return;
+                                }
+                                if (
+                                    this.$dayjs(expense.date).isSame(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    expensesAccu =
+                                        expensesAccu + expense.amount;
+                                    return;
+                                }
+                                if (expense.repeat && !expense.endDate) {
+                                    expensesAccu =
+                                        expensesAccu + expense.amount;
+                                    return;
+                                }
+                                if (
+                                    expense.repeat &&
+                                    this.$dayjs(expense.endDate).isAfter(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                                ) {
+                                    expensesAccu =
+                                        expensesAccu + expense.amount;
+                                }
+                            }
+                        );
 
-                        console.log(expenses);
-                        accountBalance = accountBalance + income - expenses;
+                        // Loan Expenses
+
+                        let loanExpenses = 0;
+                        this.$store.getters.viewData.loans.forEach((loan) => {
+                            if (loan.account !== account._id) return;
+                            let thisMonthsPayment = loan.payments.filter(
+                                (payment) =>
+                                    this.$dayjs(payment.date).isSame(
+                                        timeLineDate,
+                                        "month"
+                                    )
+                            );
+                            if (thisMonthsPayment.length < 1) return;
+
+                            thisMonthsPayment = thisMonthsPayment.reduce(
+                                (accum, currnet) => accum + currnet.payment,
+                                0
+                            );
+                            loanExpenses = Number(
+                                loanExpenses + thisMonthsPayment
+                            );
+                        });
+                        // console.log(incomeAccu);
+                        // console.log(expensesAccu);
+                        // console.log(loanExpenses);
+                        accountBalance =
+                            accountBalance +
+                            incomeAccu -
+                            expensesAccu -
+                            loanExpenses;
                     }
                     account.projectedBalance.push(accountBalance);
                 });
-
                 let timeLineLength = this.timeline.length;
                 account.projectedBalance = account.projectedBalance.slice(
                     -timeLineLength
                 );
-
-                // account.projectedBalance = account.projectedBalance.filter(
-                //     (b) => {
-                //         console.log(new Date(b) < new Date(this.timeline[0]));
-                //         b < this.timeline[0];
-                //     }
-                // );
-
-                // let expenses = this.buildExpenses(account);
-                // let incomes = this.buildIncomes(account).projected;
-
-                // console.log(expenses);
-                // console.log(incomes);
-
-                // let lastEntry = account.balance.at(-1);
-                // let lastEntryDate =
-                //     new Date(lastEntry.date).getFullYear() +
-                //     this.$t("yearAppend") +
-                //     new Date(lastEntry.date).getMonth();
-                // let lastEntryBalance = lastEntry.balance;
-
-                // let monthDiff = this.$monthDiff(
-                //     new Date(lastEntryDate),
-                //     new Date()
-                // );
-
-                // let pastMovements =
-
-                // let startBalance =
-                //     lastEntryBalance +
-                //     incomes * monthDiff -
-                //     expenses * monthDiff;
-
-                // let projectedBalance = [startBalance];
-
-                // this.timeline.forEach((date, index) => {
-                //     let balance =
-                //         projectedBalance[index] - expenses[index] + incomes;
-                //     projectedBalance.push(balance);
-                // });
-                // account.projectedBalance = projectedBalance;
             });
-            // accounts.map(i => {
-            //     i.balance = []
-            //     this.timeline.array.forEach(date => {
-            //         let balance = i.balance +
-            //     });
-            // });
             return accounts;
+        },
+        accumulated() {
+            let accumulated = null
+            this.accounts.forEach((account) => {
+                if (!accumulated) {
+                    accumulated = JSON.parse(JSON.stringify(account.projectedBalance))
+                    return
+                }
+                account.projectedBalance.forEach((balance, index) => {
+                    accumulated[index] = accumulated[index] + balance
+                })
+            })
+            return accumulated
         },
         datasets() {
             let datasets = [];
-            this.accounts.forEach((account) => {
+            this.accounts.forEach((account, index) => {
                 datasets.push({
+                    type: "line",
                     label: account.name + " " + account.owner + " projected",
-                    backgroundColor: "#42A5F5",
+                    backgroundColor: this.lineColors[index] || '#009688' ,
+                    borderColor: this.lineColors[index] || '#009688' ,
                     data: account.projectedBalance,
                 });
             });
+            datasets.push({
+                    type: "bar",
+                    label: this.$t('accumulated'),
+                    backgroundColor: "#ede7f6",
+                    data: this.accumulated,
+  
+            })
             return datasets;
         },
         chartSummary() {

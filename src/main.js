@@ -6,6 +6,9 @@ import DataService from "./services/data.service";
 import FormatDate from "./services/date.service";
 import { createI18n } from "vue-i18n";
 import messages from "@intlify/unplugin-vue-i18n/messages";
+import dayjs from 'dayjs'
+import 'dayjs/locale/ja'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 
 import PrimeVue from "primevue/config";
 import Card from "primevue/card";
@@ -51,6 +54,9 @@ const i18n = createI18n({
     messages: messages,
 });
 
+dayjs.extend(isSameOrAfter)
+dayjs.locale('ja')
+
 app.use(i18n);
 app.use(PrimeVue, { ripple: true });
 app.use(store);
@@ -76,5 +82,7 @@ app.component("InputSwitch", InputSwitch);
 app.component("Chart", Chart);
 
 app.directive("ripple", Ripple);
+
+app.config.globalProperties.$dayjs = dayjs
 
 app.mount("#app");
